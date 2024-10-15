@@ -5,21 +5,23 @@ YELLOW='\e[33m'
 PURPLE='\e[35m'
 NORMAL='\e[0m'
 BLUE='\e[34m'
-WELCOME="¡Bienvenido, este script escrito en bash realizará paso a paso \
-la compilación y instalación de (QTILE WM) con soporte para (Wayland) \
-en su carpeta de usuario personal(Home) y copiará el \
-ejecutable (qtile) a (~/.local/bin)!"
-FOLDERQTILE="qtile_venv"
+WELCOME="Welcome, this bash script will step by step compile and install (QTILE WM) with support for (Wayland) into your personal user folder (Home) and copy the (qtile) executable to (~/.local/bin)!"
 
-figlet -f smslant  "BUILD QTILE WAYLAND"
 echo -e "${BLUE}${WELCOME}${NORMAL}"
-echo -n -e "${YELLOW}¿Desea continuar con la instalación? : (y/n)${NORMAL} "
+echo -n -e "${YELLOW}Do you want to continue with the installation? : (y/n)${NORMAL} "
 read confirmation
 if [ $confirmation = "y" ]
 then
-	cd ~
-	python3 -m venv ${FOLDERQTILE}
-	cd  ~/${FOLDERQTILE}
+    cd ~ 	
+    echo -n -e "${YELLOW}Enter the folder where to install qtile as virtualenv : ${NORMAL} "
+    read FOLDERENV
+    echo -n -e "${YELLOW}will be installed in this folder '$HOME/${FOLDERENV}'${NORMAL} "
+    echo -n -e "${YELLOW}You're sure? : (y/n)${NORMAL} "
+    read confirmation
+    if [ $confirmation = "y" ]
+    then
+	python3 -m venv ${FOLDERENV}
+	cd  ~/${FOLDERENV}
 	git clone https://github.com/qtile/qtile.git
 	git clone https://github.com/flacjacket/pywayland.git
 	git clone https://github.com/flacjacket/pywlroots.git
@@ -33,14 +35,20 @@ then
 	bin/pip3 install pywayland/.
 	bin/pip3 install pywlroots/.
 	source bin/activate
-	cd ~/${FOLDERQTILE}/qtile
+	cd ~/${FOLDERENV}/qtile
 	# install Qtile
 	pip3 install --config-setting backend=wayland . 
-	cd ~/${FOLDERQTILE}
+	cd ~/${FOLDERENV}
+	mkdir -p  ~/.local/bin
 	cp bin/qtile ~/.local/bin
 	pip3 install psutil
 	pip3 install dbus-next
 	pip3 install pulsectl-asyncio
 	pip3 install iwlib
-	echo -e "${GREEN}Instalación terminada:)${NORMAL}"
+ 	echo -e "${GREEN}installation completed :)${NORMAL}"
+    else  
+ 	echo -e "${RED}installation cancelled${NORMAL}"
+    fi    
+else
+    echo -e "${RED}installation cancelled${NORMAL}"	    
 fi
